@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#20252d">
+<title>나의 오피스 매너 점수는?</title>
+<style>
+:root{--red:#ea002c;--ink:#20252d;--muted:#68717d;--line:#e5e7eb;--bg:#f5f6f8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+.wrap{width:min(100% - 28px,640px);margin:24px auto 48px}
+.hero{background:var(--ink);color:#fff;border-radius:22px;padding:28px 24px;margin-bottom:22px}
+.kicker{font-size:11px;letter-spacing:1.5px;color:#ff9bad;font-weight:800}
+h1{font-size:clamp(30px,7vw,43px);line-height:1.2;margin:14px 0 10px;letter-spacing:-1.5px}
+.hero p{color:#d4d9df;line-height:1.65;margin:0}
+.hero .accent{color:#ff4567;font-weight:800}
+.sub{font-size:12px;color:#aeb7c2;margin-top:17px!important}
+.topline{display:flex;justify-content:space-between;align-items:center;font-weight:800}
+.count{font-size:12px;color:var(--muted);background:#fff;border:1px solid var(--line);padding:6px 10px;border-radius:30px}
+.progressline{height:6px;background:#e8e9ec;border-radius:9px;overflow:hidden;margin:12px 0 22px}
+.progress{height:100%;width:0;background:var(--red);transition:width .2s}
+.question{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin:12px 0;box-shadow:0 2px 8px #17202b08}
+.meta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:13px}
+.qnum{font-size:11px;color:var(--muted);font-weight:800;letter-spacing:1px}
+.tag{font-size:11px;background:#f1f2f4;color:#555e68;padding:5px 9px;border-radius:20px;white-space:nowrap}
+.qtext{font-size:16px;font-weight:750;line-height:1.6;margin:0 0 16px}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.choice{border:1px solid #d9dde2;background:#fff;border-radius:11px;padding:13px 8px;font-size:14px;font-weight:800;color:#343b44;cursor:pointer}
+.choice[aria-pressed=true]{border:2px solid var(--red);background:#fff3f5;color:var(--red);padding:12px 7px}
+button:focus-visible{outline:3px solid #ff9bad;outline-offset:2px}
+.primary{width:100%;border:0;border-radius:13px;background:var(--red);color:#fff;font-weight:800;font-size:16px;padding:17px;margin-top:10px;cursor:pointer}
+.primary:disabled{background:#c9cbd0;cursor:not-allowed}
+.note{font-size:11px;line-height:1.7;color:var(--muted);margin:16px 2px}
+.result{display:none;background:#fff;border:1px solid #f0a0af;border-radius:18px;padding:23px;margin-top:20px}
+.result.show{display:block}
+.resulthead{text-align:center}
+.score{font-size:58px;font-weight:900;color:var(--red);letter-spacing:-2px;margin:8px 0}
+.score small{font-size:16px;color:var(--muted);letter-spacing:0}
+.resulttitle{font-size:24px;font-weight:850;margin:4px 0 8px}
+.resultdesc{font-size:13px;line-height:1.7;color:var(--muted)}
+.rule{height:1px;background:var(--line);margin:20px 0}
+.mission{background:#f5f6f8;border-radius:12px;padding:15px;font-size:13px;line-height:1.75;white-space:pre-line}
+.mission strong{display:block;margin-bottom:6px}
+.footerline{text-align:center;font-weight:850;line-height:1.7;margin:20px 0 2px}
+.footerline span{color:var(--red)}
+.secondary{width:100%;border:1px solid #d9dde2;background:#fff;border-radius:11px;padding:13px;font-weight:800;margin-top:14px;cursor:pointer}
+@media(min-width:560px){.wrap{margin-top:42px}.hero{padding:36px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <section class="hero">
+    <div class="kicker">OFFICE ETIQUETTE CHECK</div>
+    <h1>나는 오늘도<br>매너 있는 동료일까?</h1>
+    <p><span class="accent">나의 오피스 매너</span>를 체크해 보세요!</p>
+    <p class="sub">11개의 질문에 솔직하게 O 또는 X를 선택해 주세요.<br>소요 시간 약 1분 · 정답 없는 셀프 체크</p>
+  </section>
+
+  <div class="topline"><span>나의 매너 체크</span><span class="count" id="count">0 / 11 완료</span></div>
+  <div class="progressline"><div class="progress" id="progress"></div></div>
+  <section id="questions"></section>
+  <button class="primary" id="submit" disabled>나의 매너 점수 확인하기 →</button>
+  <section class="result" id="result" aria-live="polite"></section>
+  <p class="note">※ 본 테스트는 개인의 매너 습관을 돌아보기 위한 자가진단입니다. '잘 지킨다(O)' 응답을 기준으로 점수를 산정하며, 응답은 이 기기에서만 계산되고 별도로 저장·수집되지 않습니다.</p>
+</main>
+
+<script>
+const items = [
+  {category:"소통 매너", question:"업무 중 동료와 대화하거나 통화할 때 주변을 의식해 목소리를 조절한다."},
+  {category:"소통 매너", question:"통화가 길어지거나 목소리가 커질 때 회의실이나 별도 공간을 이용한다."},
+  {category:"공간 매너", question:"사무실에서는 슬리퍼를 끌지 않고 조용히 이동한다."},
+  {category:"소음 매너", question:"키보드나 마우스를 사용할 때 불필요하게 큰 소리가 나지 않도록 신경 쓴다."},
+  {category:"소음 매너", question:"기계식 키보드 사용 시 타건 소음이 주변 동료의 업무에 방해되지 않도록 배려한다."},
+  {category:"배려 매너", question:"재채기, 트림 등 생리현상이 발생하면 주변 사람을 배려한다."},
+  {category:"개인 매너", question:"사무실에서 손톱 깎기 등 개인 위생 정비를 하지 않는다."},
+  {category:"배려 매너", question:"다른 사람의 모니터를 허락 없이 훑어보지 않는다."},
+  {category:"공간 매너", question:"공용 공간을 사용한 뒤 다음 사람을 위해 깨끗하게 정리한다."},
+  {category:"회의실 매너", question:"회의가 끝난 뒤 회의실의 의자, 테이블, 화이트보드 등을 정리한다."},
+  {category:"배려 매너", question:"동료가 집중하거나 업무에 몰입하고 있을 때 불필요한 방해를 하지 않는다."}
+];
+
+const answers = {};
+const questionRoot = document.getElementById("questions");
+const countEl = document.getElementById("count");
+const progressEl = document.getElementById("progress");
+const submitBtn = document.getElementById("submit");
+const resultEl = document.getElementById("result");
+
+items.forEach((item, index) => {
+  const card = document.createElement("article");
+  card.className = "question";
+  const meta = document.createElement("div");
+  meta.className = "meta";
+  const number = document.createElement("span");
+  number.className = "qnum";
+  number.textContent = `QUESTION ${String(index + 1).padStart(2, "0")}`;
+  const tag = document.createElement("span");
+  tag.className = "tag";
+  tag.textContent = item.category;
+  meta.append(number, tag);
+
+  const question = document.createElement("p");
+  question.className = "qtext";
+  question.textContent = item.question;
+
+  const choices = document.createElement("div");
+  choices.className = "choices";
+  [["O", "O  잘 지킨다"], ["X", "X  아쉽다"]].forEach(([value, label]) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "choice";
+    button.textContent = label;
+    button.setAttribute("aria-pressed", "false");
+    button.addEventListener("click", () => {
+      answers[index] = value;
+      choices.querySelectorAll("button").forEach(b =>
+        b.setAttribute("aria-pressed", String(b === button))
+      );
+      updateProgress();
+      resultEl.classList.remove("show");
+    });
+    choices.append(button);
+  });
+
+  card.append(meta, question, choices);
+  questionRoot.append(card);
+});
+
+function updateProgress() {
+  const completed = Object.keys(answers).length;
+  countEl.textContent = `${completed} / ${items.length} 완료`;
+  progressEl.style.width = `${completed / items.length * 100}%`;
+  submitBtn.disabled = completed !== items.length;
+}
+
+submitBtn.addEventListener("click", () => {
+  if (Object.keys(answers).length !== items.length) return;
+  const yesCount = Object.values(answers).filter(value => value === "O").length;
+  const score = Math.round(yesCount / items.length * 100);
+  let title, description;
+  if (score === 100) {
+    title = "매너 마스터";
+    description = "배려가 일상인 당신! 지금처럼 좋은 오피스 매너를 이어가 주세요.";
+  } else if (score >= 80) {
+    title = "센스 있는 매너인";
+    description = "좋아요! 작은 배려로 더 쾌적한 사무실을 만드는 동료예요.";
+  } else if (score >= 60) {
+    title = "매너 성장 중!";
+    description = "조금만 더 주변을 살피면 모두가 함께 일하기 좋은 환경을 만들 수 있어요.";
+  } else {
+    title = "매너 리부트";
+    description = "무심코 한 행동이 누군가에게 불편함은 아니었을까요? 오늘부터 하나씩 바꿔봐요.";
+  }
+
+  const missed = items
+    .map((item, index) => answers[index] === "X" ? item : null)
+    .filter(Boolean);
+  const missionText = missed.length
+    ? missed.map(item => `• ${item.category} | ${item.question}`).join("\n")
+    : "모든 항목을 잘 실천하고 있어요!\n지금처럼 서로를 배려하는 습관을 이어가세요.";
+
+  resultEl.innerHTML = `
+    <div class="resulthead">
+      <div class="kicker" style="color:var(--red)">CHECK COMPLETE</div>
+      <div style="font-size:18px;font-weight:800;margin-top:8px">나의 오피스 매너 점수</div>
+      <div class="score">${score}<small> / 100점</small></div>
+      <div class="resulttitle">${title}</div>
+      <div class="resultdesc">${description}</div>
+    </div>
+    <div class="rule"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
+      <span style="color:var(--muted)">실천하고 있는 항목</span>
+      <strong>${yesCount} / ${items.length}개</strong>
+    </div>
+    <div class="progressline" style="margin:10px 0 17px"><div class="progress" style="width:${score}%"></div></div>
+    <div class="mission"><strong>오늘의 매너 미션</strong>${missionText.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")}</div>
+    <div class="footerline">작은 배려가 모여<br><span>SUPEX 추구 환경</span>을 만듭니다.</div>
+    <button class="secondary" id="retry" type="button">다시 테스트하기</button>
+  `;
+  resultEl.classList.add("show");
+  resultEl.scrollIntoView({behavior:"smooth", block:"start"});
+  document.getElementById("retry").addEventListener("click", () => {
+    Object.keys(answers).forEach(key => delete answers[key]);
+    questionRoot.querySelectorAll(".choice").forEach(button => button.setAttribute("aria-pressed","false"));
+    updateProgress();
+    resultEl.classList.remove("show");
+    resultEl.innerHTML = "";
+    window.scrollTo({top:0, behavior:"smooth"});
+  });
+});
+
+updateProgress();
+</script>
+</body>
+</html>
