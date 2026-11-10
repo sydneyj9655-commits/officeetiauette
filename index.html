@@ -51,13 +51,13 @@ button:focus-visible{outline:3px solid #ff9bad;outline-offset:2px}
 <body>
 <main class="wrap">
   <section class="hero">
-    <div class="kicker">OFFICE ETIQUETTE CHECK</div>
+    <div class="kicker">OFFICE MANNERS CHECK</div>
     <h1>나는 오늘도<br>매너 있는 동료일까?</h1>
     <p><span class="accent">나의 오피스 매너</span>를 체크해 보세요!</p>
-    <p class="sub">11개의 질문에 솔직하게 O 또는 X를 선택해 주세요.<br>소요 시간 약 1분 · 정답 없는 셀프 체크</p>
+    <p class="sub">10개의 질문에 솔직하게 O 또는 X를 선택해 주세요.<br>소요 시간 약 1분 · 정답 없는 셀프 체크</p>
   </section>
 
-  <div class="topline"><span>나의 매너 체크</span><span class="count" id="count">0 / 11 완료</span></div>
+  <div class="topline"><span>나의 매너 체크</span><span class="count" id="count">0 / 10 완료</span></div>
   <div class="progressline"><div class="progress" id="progress"></div></div>
   <section id="questions"></section>
   <button class="primary" id="submit" disabled>나의 매너 점수 확인하기 →</button>
@@ -70,7 +70,6 @@ const items = [
   {category:"소통 매너", question:"업무 중 동료와 대화하거나 통화할 때 주변을 의식해 목소리를 조절한다."},
   {category:"소통 매너", question:"통화가 길어지거나 목소리가 커질 때 회의실이나 별도 공간을 이용한다."},
   {category:"공간 매너", question:"사무실에서는 슬리퍼를 끌지 않고 조용히 이동한다."},
-  {category:"소음 매너", question:"키보드나 마우스를 사용할 때 불필요하게 큰 소리가 나지 않도록 신경 쓴다."},
   {category:"소음 매너", question:"기계식 키보드 사용 시 타건 소음이 주변 동료의 업무에 방해되지 않도록 배려한다."},
   {category:"배려 매너", question:"재채기, 트림 등 생리현상이 발생하면 주변 사람을 배려한다."},
   {category:"개인 매너", question:"사무실에서 손톱 깎기 등 개인 위생 정비를 하지 않는다."},
